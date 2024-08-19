@@ -1,12 +1,31 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+
+// const connectToDB = async () => {
+//   try {
+//     await mongoose.connect("mongodb://127.0.0.1:27017/edu-app");
+//   } catch (error) {
+//     console.log(error);
+//     process.exit(1);
+//   }
+// };
+
+// module.exports = c;
+
+import mongoose from "mongoose";
+// import { DB_NAME } from "../constants.js";
 
 const connectToDB = async () => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/edu-app");
+    const connectionInstance = await mongoose.connect(
+      `${process.env.MONGODB_URI}`
+    );
+    console.log(
+      `\n MongoDB connection !! DB HOST:${connectionInstance.connection.host}`
+    );
   } catch (error) {
-    console.log(error);
+    console.log("MONGODB connection Failed", error);
     process.exit(1);
   }
 };
 
-module.exports = connectToDB;
+export default connectToDB;

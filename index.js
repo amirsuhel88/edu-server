@@ -1,5 +1,6 @@
-const connectToDB = require("./dbConnect");
-const app = require("./app");
+import connectToDB from "./dbConnect";
+import app from require("./app")
+// const app = require("./app");
 connectToDB().then(() => {
   console.log("Database Connected");
 });
