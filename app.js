@@ -1,12 +1,13 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const userModel = require("./models/userModel");
+import express from "express";
+// import cookieParser from "cookie-parser";
+// import cors from "cors";
 
-const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
-app.use(express.json);
+export const app = express();
 
-module.exports = app;
+// app.use(
+
+//   cors({
+//     origin: process.env.CORS_ORIGIN,
+//     credentials: true,
+//   })
+// );
