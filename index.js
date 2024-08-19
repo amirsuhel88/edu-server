@@ -1,11 +1,32 @@
-const connectToDB = require("./dbConnect");
-const app = require("./app");
-connectToDB().then(() => {
-  console.log("Database Connected");
-});
+// import connectToDB from "./dbConnect.js";
+// import dotenv from "dotenv";
+// import app from "./app.js";
 
-const PORT = process.env.PORT || 3000;
+// dotenv.config({
+//   path: "./.env",
+// });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// connectToDB()
+//   .then(() => {
+//     app.listen(process.env.PORT, () => {
+//       console.log(`Server is running at port : ${process.env.PORT}`);
+//     });
+//   })
+//   .catch((err) => {
+//     console.log("MONGO db connection failed !!! ", err);
+//   });
+import connectToDB from "./dbConnect.js";
+import dotenv from "dotenv";
+import app from "./app.js";
+
+dotenv.config();
+
+connectToDB()
+  .then(() => {
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is running at port: ${process.env.PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("MONGO db connection failed !!!", err);
+  });
