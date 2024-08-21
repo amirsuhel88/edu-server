@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
-dotenv.config();
-
 import jwt from "jsonwebtoken";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import { userSchema } from "../middleware/validation.js";
 import { userModel } from "../models/userModel.js";
+
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
