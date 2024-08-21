@@ -1,12 +1,32 @@
 import dotenv from "dotenv";
-dotenv.config();
-
 import jwt from "jsonwebtoken";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import { userSchema } from "../middleware/validation.js";
 import { userModel } from "../models/userModel.js";
 
+dotenv.config();
+
 const JWT_SECRET = process.env.JWT_SECRET;
+
+// generate access and refresh token
+const generateAccessTokenAndRefreshToken = async (userId) => {
+  try {
+    const user = await userModel.findById(userId);
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(
+      500,
+      "Something went wrong while generating refresh token"
+    );
+  }
+};
 
 //signup a new user
 export const signup = catchAsyncError(async (req, res, next) => {
@@ -42,9 +62,14 @@ export const login = catchAsyncError(async (req, res, next) => {
     return res.status(401).json({ message: "Invalid email or password" });
   }
 
-  // Generate a JWT
-  const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
+  const { refreshToken, accessToken } =
+    await generateAccessTokenAndRefreshToken(user._id);
+
+  //send cookies
+  const loggedInUser = await userModel
+    .findById(user._id)
+    .select("-password -refreshToken");
 
   // Send the token to the client
-  res.status(200).json({ token });
+  res.status(200).json({ accessToken });
 });
