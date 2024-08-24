@@ -3,20 +3,40 @@ import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const userSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  phone: { type: String, required: true },
-  role: {
-    type: String,
-    enum: ["student", "teacher", "admin"],
-    default: "student",
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    dob: {
+      type: Date,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ["student", "teacher", "admin"],
+      default: "student",
+    },
+    refreshToken: {
+      type: String,
+    },
   },
-  refreshToken: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 
 //using hashpassword middleware
 userSchema.pre("save", async function (next) {

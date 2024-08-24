@@ -3,6 +3,9 @@ import jwt from "jsonwebtoken";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import { userSchema } from "../middleware/validation.js";
 import { userModel } from "../models/userModel.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 dotenv.config();
 
@@ -72,4 +75,54 @@ export const login = catchAsyncError(async (req, res, next) => {
 
   // Send the token to the client
   res.status(200).json({ accessToken });
+});
+
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies?.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "unauthorized request");
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECTET
+    );
+
+    const user = await userModel.findById(decodedToken?._id);
+    console.log("User", user);
+
+    if (!user) {
+      throw new ApiError(401, "Invalid refresh token");
+    }
+
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError(401, "Refresh token is expired or used");
+    }
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    const { accessToken, refreshToken } =
+      await generateAccessTokenAndRefreshToken(user._id);
+    console.log("refreshToken");
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken, refreshToken },
+          "Access token refreshed"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid refresh token");
+  }
 });
