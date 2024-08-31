@@ -5,31 +5,59 @@ import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
   {
-    name: {
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      uniqure: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
+    firstName: {
+      type: String,
+      required: [true, "First name is required"],
+      trim: true,
+      index: true,
+    },
+    lastName: {
+      type: String,
+      required: [true, "Last name is required"],
+      trim: true,
+      index: true,
+    },
+    fullName: {
       type: String,
       required: true,
+      trim: true,
+      index: true,
     },
     email: {
       type: String,
-      required: true,
-      unique: true,
+      required: [true, "Email is required"],
+      uniqure: true,
+      match: [/.+\@.+\..+/, "Please use a valid email address"],
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "password is required"],
     },
     phone: {
       type: String,
-      required: true,
+      required: [true, "phone number is required"],
     },
     dob: {
       type: Date,
-      required: true,
+      required: [true, "Date of birth is required"],
     },
     role: {
       type: String,
       enum: ["student", "teacher", "admin"],
       default: "student",
+    },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
     },
     refreshToken: {
       type: String,
